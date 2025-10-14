@@ -161,7 +161,7 @@ public class ExecuteExceptionHandler {
                             String filePath = msg.substring(fileStart + 5, fileEnd);
                             String[] parts = filePath.split("/");
                             if (parts.length >= 6) {
-                                tabletId = Long.parseLong(parts[5]);
+                                tabletId = Long.parseLong(parts[7]);
                             }
                         }
                     }
