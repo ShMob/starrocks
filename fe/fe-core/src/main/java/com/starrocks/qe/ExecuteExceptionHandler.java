@@ -16,6 +16,7 @@ package com.starrocks.qe;
 
 import com.google.common.collect.ImmutableSet;
 import com.starrocks.catalog.HiveTable;
+import com.starrocks.common.Config;
 import com.starrocks.common.InternalErrorCode;
 import com.starrocks.common.UserException;
 import com.starrocks.common.profile.Tracers;
