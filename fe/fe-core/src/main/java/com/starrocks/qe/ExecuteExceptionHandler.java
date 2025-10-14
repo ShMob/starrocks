@@ -172,7 +172,9 @@ public class ExecuteExceptionHandler {
                         int colonPos = msg.indexOf(":", beStart + 1);
                         if (colonPos != -1) {
                             int beEnd = msg.indexOf(")", colonPos);
-                            if (beEnd == -1) beEnd = msg.length();
+                            if (beEnd == -1) {
+                                beEnd = msg.length();
+                            }
                             String bePart = msg.substring(colonPos + 1, beEnd).trim();
                             backendId = Long.parseLong(bePart);
                         }
