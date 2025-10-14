@@ -14,8 +14,8 @@
 
 package com.starrocks.qe;
 
-import com.starrocks.analysis.StringLiteral;
-import com.starrocks.common.Config;
+import com.google.common.collect.ImmutableSet;
+import com.starrocks.catalog.HiveTable;
 import com.starrocks.common.InternalErrorCode;
 import com.starrocks.common.UserException;
 import com.starrocks.common.profile.Tracers;
@@ -183,11 +183,11 @@ public class ExecuteExceptionHandler {
                         // Set replica status to bad
                         List<Property> propertyList = new ArrayList<>();
                         propertyList.add(new Property(AdminSetReplicaStatusStmt.TABLET_ID,
-                                new StringLiteral(String.valueOf(tabletId))));
+                                String.valueOf(tabletId)));
                         propertyList.add(new Property(AdminSetReplicaStatusStmt.BACKEND_ID,
-                                new StringLiteral(String.valueOf(backendId))));
+                                String.valueOf(backendId)));
                         propertyList.add(new Property(AdminSetReplicaStatusStmt.STATUS,
-                                new StringLiteral("bad")));
+                                "bad"));
                         PropertySet properties = new PropertySet(propertyList, NodePosition.ZERO);
                         AdminSetReplicaStatusStmt setStmt = new AdminSetReplicaStatusStmt(properties,
                                 NodePosition.ZERO);
