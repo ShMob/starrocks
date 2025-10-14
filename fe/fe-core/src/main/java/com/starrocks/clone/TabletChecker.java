@@ -1,5 +1,3 @@
-// TODO: This is one of problems, it must detect unhealthy tablets. (tablets that have bad page size too small)
-
 // Copyright 2021-present StarRocks, Inc. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");

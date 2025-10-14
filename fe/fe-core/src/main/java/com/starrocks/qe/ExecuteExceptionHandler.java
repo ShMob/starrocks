@@ -14,8 +14,7 @@
 
 package com.starrocks.qe;
 
-import com.google.common.collect.ImmutableSet;
-import com.starrocks.catalog.HiveTable;
+import com.starrocks.analysis.StringLiteral;
 import com.starrocks.common.Config;
 import com.starrocks.common.InternalErrorCode;
 import com.starrocks.common.UserException;
@@ -28,17 +27,16 @@ import com.starrocks.planner.ScanNode;
 import com.starrocks.rpc.RpcException;
 import com.starrocks.server.CatalogMgr;
 import com.starrocks.server.GlobalStateMgr;
+import com.starrocks.server.LocalMetastore;
 import com.starrocks.sql.StatementPlanner;
+import com.starrocks.sql.ast.AdminSetReplicaStatusStmt;
 import com.starrocks.sql.ast.CreateTableAsSelectStmt;
 import com.starrocks.sql.ast.CreateTableLikeStmt;
 import com.starrocks.sql.ast.CreateTableStmt;
-import com.starrocks.sql.ast.QueryStatement;
-import com.starrocks.sql.ast.StatementBase;
-import com.starrocks.analysis.StringLiteral;
-import com.starrocks.server.LocalMetastore;
-import com.starrocks.sql.ast.AdminSetReplicaStatusStmt;
 import com.starrocks.sql.ast.Property;
 import com.starrocks.sql.ast.PropertySet;
+import com.starrocks.sql.ast.QueryStatement;
+import com.starrocks.sql.ast.StatementBase;
 import com.starrocks.sql.parser.NodePosition;
 import com.starrocks.sql.plan.ExecPlan;
 import com.starrocks.thrift.TExplainLevel;
@@ -182,14 +180,19 @@ public class ExecuteExceptionHandler {
                     if (tabletId != -1 && backendId != -1) {
                         // Set replica status to bad
                         List<Property> propertyList = new ArrayList<>();
-                        propertyList.add(new Property(AdminSetReplicaStatusStmt.TABLET_ID, new StringLiteral(String.valueOf(tabletId))));
-                        propertyList.add(new Property(AdminSetReplicaStatusStmt.BACKEND_ID, new StringLiteral(String.valueOf(backendId))));
-                        propertyList.add(new Property(AdminSetReplicaStatusStmt.STATUS, new StringLiteral("bad")));
+                        propertyList.add(new Property(AdminSetReplicaStatusStmt.TABLET_ID,
+                                new StringLiteral(String.valueOf(tabletId))));
+                        propertyList.add(new Property(AdminSetReplicaStatusStmt.BACKEND_ID,
+                                new StringLiteral(String.valueOf(backendId))));
+                        propertyList.add(new Property(AdminSetReplicaStatusStmt.STATUS,
+                                new StringLiteral("bad")));
                         PropertySet properties = new PropertySet(propertyList, NodePosition.ZERO);
-                        AdminSetReplicaStatusStmt setStmt = new AdminSetReplicaStatusStmt(properties, NodePosition.ZERO);
+                        AdminSetReplicaStatusStmt setStmt = new AdminSetReplicaStatusStmt(properties,
+                                NodePosition.ZERO);
                         LocalMetastore metastore = GlobalStateMgr.getCurrentState().getLocalMetastore();
                         metastore.setReplicaStatus(setStmt);
-                        LOG.info("Marked tablet {} on backend {} as bad due to bad page error", tabletId, backendId);
+                        LOG.info("Marked tablet {} on backend {} as bad due to bad page error",
+                                tabletId, backendId);
                     }
                 } catch (Exception parseEx) {
                     LOG.warn("Failed to parse tablet_id and backend_id from bad page message: {}", msg, parseEx);
