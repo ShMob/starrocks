@@ -1,0 +1,292 @@
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements.  See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership.  The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License.  You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+package com.starrocks.qe;
+
+import com.google.common.collect.Lists;
+import com.starrocks.common.util.RuntimeProfile;
+import com.starrocks.thrift.TNetworkAddress;
+import com.starrocks.thrift.TUniqueId;
+
+import java.util.List;
+
+public final class QueryStatisticsItem {
+
+    private final String customQueryId;
+    private final String queryId;
+    private final String user;
+    private final String sql;
+    private final String db;
+    private final String connId;
+    private final long queryStartTime;
+    private final List<FragmentInstanceInfo> fragmentInstanceInfos;
+    // root query profile
+    private final RuntimeProfile queryProfile;
+    private final TUniqueId executionId;
+    private final String warehouseName;
+    private final String resourceGroupName;
+
+    private QueryStatisticsItem(Builder builder) {
+        this.customQueryId = builder.customQueryId;
+        this.queryId = builder.queryId;
+        this.user = builder.user;
+        this.sql = builder.sql;
+        this.db = builder.db;
+        this.connId = builder.connId;
+        this.queryStartTime = builder.queryStartTime;
+        this.fragmentInstanceInfos = builder.fragmentInstanceInfos;
+        this.queryProfile = builder.queryProfile;
+        this.executionId = builder.executionId;
+        this.warehouseName = builder.warehouseName;
+        this.resourceGroupName = builder.resourceGroupName;
+    }
+
+    public String getDb() {
+        return db;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public String getSql() {
+        return sql;
+    }
+
+    public String getConnId() {
+        return connId;
+    }
+
+    public long getQueryStartTime() {
+        return queryStartTime;
+    }
+
+    public long getQueryExecTime() {
+        long currentTime = System.currentTimeMillis();
+        return currentTime - queryStartTime;
+    }
+
+    public String getCustomQueryId() {
+        return customQueryId;
+    }
+
+    public String getQueryId() {
+        return queryId;
+    }
+
+    public List<FragmentInstanceInfo> getFragmentInstanceInfos() {
+        return fragmentInstanceInfos;
+    }
+
+    public RuntimeProfile getQueryProfile() {
+        return queryProfile;
+    }
+
+    public TUniqueId getExecutionId() {
+        return executionId;
+    }
+
+    public String getWarehouseName() {
+        return warehouseName;
+    }
+
+    public String getResourceGroupName() {
+        return resourceGroupName;
+    }
+
+    public static final class Builder {
+        private String customQueryId;
+        private String queryId;
+        private String db;
+        private String user;
+        private String sql;
+        private String connId;
+        private long queryStartTime;
+        private List<FragmentInstanceInfo> fragmentInstanceInfos;
+        private RuntimeProfile queryProfile;
+        private TUniqueId executionId;
+        private String warehouseName;
+        private String resourceGroupName;
+
+        public Builder() {
+            fragmentInstanceInfos = Lists.newArrayList();
+        }
+
+        public Builder customQueryId(String customQueryId) {
+            this.customQueryId = customQueryId;
+            return this;
+        }
+
+        public Builder queryId(String queryId) {
+            this.queryId = queryId;
+            return this;
+        }
+
+        public Builder db(String db) {
+            this.db = db;
+            return this;
+        }
+
+        public Builder user(String user) {
+            this.user = user;
+            return this;
+        }
+
+        public Builder sql(String sql) {
+            this.sql = sql;
+            return this;
+        }
+
+        public Builder connId(String connId) {
+            this.connId = connId;
+            return this;
+        }
+
+        public Builder queryStartTime(long queryStartTime) {
+            this.queryStartTime = queryStartTime;
+            return this;
+        }
+
+        public Builder fragmentInstanceInfos(List<FragmentInstanceInfo> infos) {
+            fragmentInstanceInfos.addAll(infos);
+            return this;
+        }
+
+        public Builder profile(RuntimeProfile profile) {
+            this.queryProfile = profile;
+            return this;
+        }
+
+        public Builder executionId(TUniqueId executionId) {
+            this.executionId = executionId;
+            return this;
+        }
+
+        public Builder warehouseName(String warehouseName) {
+            this.warehouseName = warehouseName;
+            return this;
+        }
+
+        public Builder resourceGroupName(String resourceGroupName) {
+            this.resourceGroupName = resourceGroupName;
+            return this;
+        }
+
+        public QueryStatisticsItem build() {
+            initDefaultValue(this);
+            return new QueryStatisticsItem(this);
+        }
+
+        private void initDefaultValue(Builder builder) {
+            if (customQueryId == null) {
+                builder.customQueryId = "";
+            }
+
+            if (queryId == null) {
+                builder.queryId = "0";
+            }
+
+            if (db == null) {
+                builder.db = "";
+            }
+
+            if (sql == null) {
+                builder.sql = "";
+            }
+
+            if (user == null) {
+                builder.user = "";
+            }
+
+            if (connId == null) {
+                builder.connId = "";
+            }
+
+            if (queryProfile == null) {
+                queryProfile = new RuntimeProfile("");
+            }
+
+            if (executionId == null) {
+                executionId = new TUniqueId();
+            }
+        }
+    }
+
+    public static final class FragmentInstanceInfo {
+        private final TUniqueId instanceId;
+        private final TNetworkAddress address;
+        private final String fragmentId;
+
+        public FragmentInstanceInfo(Builder builder) {
+            this.instanceId = builder.instanceId;
+            this.address = builder.address;
+            this.fragmentId = builder.fragmentId;
+        }
+
+        public TUniqueId getInstanceId() {
+            return instanceId;
+        }
+
+        public TNetworkAddress getAddress() {
+            return address;
+        }
+
+        public String getFragmentId() {
+            return this.fragmentId;
+        }
+
+        public static final class Builder {
+            private TUniqueId instanceId;
+            private TNetworkAddress address;
+            private String fragmentId;
+
+            public Builder instanceId(TUniqueId instanceId) {
+                this.instanceId = instanceId;
+                return this;
+            }
+
+            public Builder address(TNetworkAddress address) {
+                this.address = address;
+                return this;
+            }
+
+            public Builder fragmentId(String fragmentId) {
+                this.fragmentId = fragmentId;
+                return this;
+            }
+
+            public FragmentInstanceInfo build() {
+                initDefaultValue(this);
+                return new FragmentInstanceInfo(this);
+            }
+
+            private void initDefaultValue(Builder builder) {
+                if (builder.instanceId == null) {
+                    builder.instanceId = new TUniqueId(-1, -1);
+                }
+
+                if (builder.address == null) {
+                    builder.address = new TNetworkAddress("null", -1);
+                }
+
+                if (builder.fragmentId == null) {
+                    builder.fragmentId = "";
+                }
+            }
+        }
+    }
+}
