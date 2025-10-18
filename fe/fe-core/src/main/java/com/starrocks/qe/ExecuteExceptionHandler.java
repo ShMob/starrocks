@@ -127,6 +127,7 @@ public class ExecuteExceptionHandler {
                                 context.parsedStmt.getOrigStmt().originStmt,
                         e1);
             }
+            ExecuteExceptionHandler.handle(e1, context);
             throw e;
         }
     }
